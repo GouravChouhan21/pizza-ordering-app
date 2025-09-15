@@ -22,6 +22,8 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
   <img width="1890" height="621" alt="image" src="https://github.com/user-attachments/assets/4ac9770d-90d4-41d3-9d2f-bd7011f7077a" />
 
 - **Payment Integration**: Razorpay integration (test mode) for secure payments
+<img width="1911" height="933" alt="image" src="https://github.com/user-attachments/assets/fa05ce74-c239-4684-beae-d206c76f1a2e" />
+
 - **Real-time Updates**: Live order status updates using Socket.io
 
 ### Admin Features
