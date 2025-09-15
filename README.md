@@ -256,6 +256,7 @@ pizza-ordering-app/
 You can deploy this app using Vercel for both frontend and backend:
 
 1. First, push your latest changes to GitHub:
+
 ```bash
 git add .
 git commit -m "Prepare for deployment"
@@ -263,6 +264,7 @@ git push origin main
 ```
 
 2. Deploy using Vercel:
+
    - Sign up at vercel.com
    - Install Vercel CLI: `npm i -g vercel`
    - Login to Vercel: `vercel login`
@@ -270,6 +272,7 @@ git push origin main
    - Follow the prompts and configure your project
 
 3. Configure environment variables in Vercel:
+
    - Go to your project settings in Vercel dashboard
    - Add the following environment variables:
      ```
@@ -285,12 +288,14 @@ git push origin main
      ```
 
 4. Set up MongoDB Atlas:
+
    - Create a free cluster at mongodb.com/cloud/atlas
    - Get your connection string
    - Add it to Vercel environment variables
    - Allow connections from all IPs (0.0.0.0/0) in Atlas Network Access
 
 5. Configure Razorpay:
+
    - Add your production Razorpay keys for live payments
    - Or keep test mode enabled for development
 
