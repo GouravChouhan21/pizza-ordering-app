@@ -1,26 +1,42 @@
 # Pizza Ordering App
+<img width="1900" height="920" alt="image" src="https://github.com/user-attachments/assets/2d430802-d56a-44bd-9408-0dbe13774b3e" />
 
 A full-stack pizza ordering application built with React, Node.js, Express, and MongoDB. This app allows users to build custom pizzas, place orders, and provides admin functionality for order and inventory management.
 
 ## Features
 
 ### User Features
+<img width="1866" height="936" alt="image" src="https://github.com/user-attachments/assets/02a02ebf-99f9-4bdc-beb4-f56280895e61" />
+
 - **User Registration & Authentication**: Complete registration with email verification and forgot password functionality
+  
 - **Custom Pizza Builder**: Interactive pizza builder with step-by-step selection of:
   - Pizza bases (5 options)
   - Sauces (5 options)
   - Cheese types
   - Vegetables (multiple options)
   - Meats (optional)
+    <img width="1866" height="911" alt="image" src="https://github.com/user-attachments/assets/97bd8138-1fc6-44a3-80ff-96e820e1a65e" />
+
 - **Order Management**: View order history and track order status in real-time
+  <img width="1890" height="621" alt="image" src="https://github.com/user-attachments/assets/4ac9770d-90d4-41d3-9d2f-bd7011f7077a" />
+
 - **Payment Integration**: Razorpay integration (test mode) for secure payments
 - **Real-time Updates**: Live order status updates using Socket.io
 
 ### Admin Features
 - **Admin Dashboard**: Overview of orders, revenue, and inventory status
+  <img width="1890" height="947" alt="image" src="https://github.com/user-attachments/assets/1f80c042-351e-4624-b6f1-f5dbfb8cae54" />
+
 - **Order Management**: Update order status (pending → confirmed → in kitchen → out for delivery → delivered)
+  <img width="1894" height="925" alt="image" src="https://github.com/user-attachments/assets/6d89fc9a-c705-4167-b0e8-c750daeb8097" />
+
 - **Inventory Management**: Manage pizza components (bases, sauces, cheeses, vegetables, meats)
+  <img width="1886" height="916" alt="image" src="https://github.com/user-attachments/assets/5a71a0ae-5fa5-499e-9f14-382cb598d602" />
+
 - **User Management**: View and manage user accounts
+  <img width="1895" height="595" alt="image" src="https://github.com/user-attachments/assets/fc7ba063-8c6f-4c12-a98b-f36047ecbaae" />
+
 - **Low Stock Alerts**: Automated email notifications when inventory falls below threshold
 - **Real-time Notifications**: Live updates for order status changes
 
