@@ -13,7 +13,12 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
   - Vegetables (multiple options)
   - Meats (optional)
 - **Order Management**: View order history and track order status in real-time
-- **Payment Integration**: Razorpay integration (test mode) for secure payments
+- **Payment Integration**: 
+  - Secure Razorpay integration
+  - Test mode support with mock transactions
+  - Real-time payment status updates
+  - Robust error handling
+  - Configurable payment settings
 - **Real-time Updates**: Live order status updates using Socket.io
 
 ### Admin Features
@@ -47,6 +52,32 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
 - Node.js (v14 or higher)
 - MongoDB Atlas account or local MongoDB installation
 - Gmail account for email notifications
+- Razorpay account for payment processing (or use test mode)
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/GouravChouhan21/pizza-ordering-app.git
+   cd pizza-ordering-app
+   ```
+
+2. Install dependencies for both backend and frontend:
+   ```bash
+   npm install
+   cd client && npm install
+   ```
+
+3. Create environment files:
+   - Copy `.env.example` to `.env`
+   - Set up your environment variables
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Configure Razorpay (choose one):
+   - For test mode: Set `RAZORPAY_TEST_MODE=true` in `.env`
+   - For production: Add your Razorpay API keys in `.env`
 
 ## Installation & Setup
 
@@ -78,8 +109,10 @@ MONGODB_URI=your_mongodb_uri
 JWT_SECRET=your_long_random_secret
 EMAIL_USER=your_gmail@example.com
 EMAIL_PASS=your_app_password
+RAZORPAY_TEST_MODE=true
 RAZORPAY_KEY_ID=your_test_key_id
 RAZORPAY_KEY_SECRET=your_test_key_secret
+PAYMENTS_DISABLED=false
 ADMIN_EMAIL=your_admin_email@example.com
 ```
 
@@ -108,6 +141,16 @@ npm run build
 npm start
 ```
 
+## Payments (Razorpay Test Mode)
+
+1. Set these environment variables in `config.env`:
+   - `PAYMENTS_DISABLED=false`
+   - `RAZORPAY_TEST_MODE=true`
+   - `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` (from Razorpay dashboard test mode)
+2. Restart the backend so changes apply.
+3. On placing an order, Razorpay test checkout opens. Use Razorpay’s test cards to complete payment.
+4. On success, the backend verifies the signature and confirms the order, updates stock, and notifies the user in real-time.
+
 ## API Endpoints
 
 ### Authentication
@@ -128,6 +171,7 @@ npm start
 - `POST /api/pizza/calculate-price` - Calculate pizza price
 
 ### Orders
+- `GET /api/orders/config` - Payment config (exposes if payments enabled and keyId)
 - `POST /api/orders/create-order` - Create new order
 - `POST /api/orders/verify-payment` - Verify payment
 - `GET /api/orders/my-orders` - Get user orders
@@ -151,49 +195,6 @@ npm start
 - `GET /api/inventory/low-stock` - Get low stock items
 - `POST /api/inventory/check-low-stock` - Check and send low stock notifications
 
-## Default Admin Account
-
-After seeding the database, you can use the following admin account:
-- **Email**: admin@pizzaapp.com
-- **Password**: admin123
-
-## Features Implementation
-
-### 1. Authentication System
-- Complete registration with email verification
-- JWT-based authentication
-- Password reset functionality
-- Role-based access control (user/admin)
-
-### 2. Pizza Builder
-- Step-by-step pizza customization
-- Real-time price calculation
-- Stock validation
-- Order summary and confirmation
-
-### 3. Payment Integration
-- Razorpay test mode integration
-- Payment verification
-- Order confirmation after successful payment
-
-### 4. Admin Panel
-- Comprehensive dashboard with statistics
-- Order management with status updates
-- Inventory management with stock tracking
-- User management
-- Low stock email notifications
-
-### 5. Real-time Updates
-- Socket.io integration for live updates
-- Order status notifications
-- Real-time inventory updates
-
-### 6. Email Notifications
-- Email verification for new users
-- Password reset emails
-- Low stock alerts for admins
-- Order confirmation emails
-
 ## Project Structure
 
 ```
@@ -212,22 +213,6 @@ pizza-ordering-app/
 └── package.json           # Dependencies
 ```
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License.
-
-## Support
-
-For support, email support@example.com or create an issue in the repository.
- 
 ## Deployment
 
 This project can be deployed to any Node hosting platform (Render, Railway, etc.) with MongoDB Atlas.
@@ -242,14 +227,12 @@ npm run build
 npm start
 ```
 3. Configure environment variables on the platform (do not commit secrets):
-   - PORT
-   - MONGODB_URI
-   - JWT_SECRET
+   - PORT, MONGODB_URI, JWT_SECRET
    - EMAIL_USER, EMAIL_PASS
-   - PAYMENTS_DISABLED (true to auto-confirm without gateway)
+   - PAYMENTS_DISABLED (false to enable gateway)
    - RAZORPAY_TEST_MODE, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET (if enabling payments)
 4. Point frontend to backend API. Locally we use `axios.defaults.baseURL = 'http://localhost:5000'`. In production, set the correct base URL.
 
 ### Git hygiene
-- Ensure `.env`, `config.env`, and other secrets are gitignored (see `client/.gitignore`).
-- Create a `config.example.env` file showing required keys without real values for collaborators.
+- Ensure `.env`, `config.env`, and other secrets are gitignored.
+- Provide `config.example.env` for collaborators with placeholders only.

@@ -232,7 +232,19 @@ const PizzaBuilder = () => {
             setShowOrderSummary(false);
             setTimeout(() => navigate('/my-orders'), 1000);
           } catch (err) {
-            setError('Payment verification failed');
+            console.error('Payment verification error:', err);
+            setError(err.response?.data?.message || 'Payment verification failed. Please try again or contact support.');
+            // Retry option for failed payments
+            setTimeout(() => {
+              setError(null);
+              setLoading(false);
+            }, 3000);
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            setError('Payment cancelled. Please try again.');
+            setLoading(false);
           }
         },
         theme: { color: '#d32f2f' }

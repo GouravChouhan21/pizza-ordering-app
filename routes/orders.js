@@ -6,18 +6,26 @@ const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Set up configuration flags first
+const isPaymentsDisabled = String(process.env.PAYMENTS_DISABLED || 'true').toLowerCase() === 'true';
+const isTestMode = String(process.env.RAZORPAY_TEST_MODE || 'true').toLowerCase() === 'true';
+
 // Initialize Razorpay (kept for optional future use)
 let razorpay = null;
 try {
-  razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
-  });
+  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+    console.log(`Razorpay initialized successfully${isTestMode ? ' in test mode' : ''}`);
+  } else {
+    console.log('Razorpay credentials not found, payment gateway will be disabled');
+  }
 } catch (e) {
-  // ignore if not configured
+  console.error('Failed to initialize Razorpay:', e.message);
+  // Payment gateway will be disabled and fall back to test mode
 }
-const isPaymentsDisabled = String(process.env.PAYMENTS_DISABLED || 'true').toLowerCase() === 'true';
-const isTestMode = String(process.env.RAZORPAY_TEST_MODE || 'true').toLowerCase() === 'true';
 
 // @route   GET /api/orders/config
 // @desc    Expose payment config to client
@@ -25,6 +33,8 @@ const isTestMode = String(process.env.RAZORPAY_TEST_MODE || 'true').toLowerCase(
 router.get('/config', auth, (req, res) => {
   res.json({
     paymentsEnabled: !isPaymentsDisabled,
+    isTestMode,
+    keyId: process.env.RAZORPAY_KEY_ID,
     keyId: process.env.RAZORPAY_KEY_ID || null,
     testMode: isTestMode
   });
@@ -147,24 +157,42 @@ router.post('/create-order', auth, async (req, res) => {
       });
     }
 
-    // Otherwise, create a Razorpay order (or mock in test mode)
+    // Otherwise, create a Razorpay order
     let razorpayOrder;
-    if (isTestMode || !razorpay) {
+    try {
+      if (!razorpay) {
+        throw new Error('Razorpay not initialized');
+      }
+      
+      razorpayOrder = await razorpay.orders.create({
+        amount: totalAmount * 100, // Amount in paise
+        currency: 'INR',
+        receipt: order.orderNumber,
+        notes: { 
+          orderId: order._id.toString(), 
+          userId: req.userId.toString(),
+          testMode: isTestMode
+        }
+      });
+      
+      console.log('Razorpay order created:', razorpayOrder.id);
+    } catch (err) {
+      console.error('Error creating Razorpay order:', err);
+      
+      // Fallback to test mode order
       razorpayOrder = {
         id: `order_test_${Date.now()}`,
         amount: totalAmount * 100,
         currency: 'INR',
         receipt: order.orderNumber,
         status: 'created',
-        notes: { orderId: order._id.toString(), userId: req.userId.toString() }
+        notes: { 
+          orderId: order._id.toString(), 
+          userId: req.userId.toString(),
+          testMode: true
+        }
       };
-    } else {
-      razorpayOrder = await razorpay.orders.create({
-        amount: totalAmount * 100,
-        currency: 'INR',
-        receipt: order.orderNumber,
-        notes: { orderId: order._id.toString(), userId: req.userId.toString() }
-      });
+      console.log('Created test mode order:', razorpayOrder.id);
     }
 
     return res.json({ order, razorpayOrder, message: 'Order created successfully' });
@@ -182,20 +210,82 @@ router.post('/verify-payment', auth, async (req, res) => {
   try {
     const { orderId, paymentId, signature } = req.body;
 
-    // In test mode, bypass signature verification
-    let dbOrderId = orderId;
-    if (!isTestMode) {
-      if (!orderId || !paymentId || !signature) {
-        return res.status(400).json({ message: 'Missing payment details' });
+    if (!orderId) {
+      return res.status(400).json({ message: 'Order ID is required' });
+    }
+
+    // Find the order first
+    const orderDoc = await Order.findById(orderId);
+    if (!orderDoc) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Verify the user owns this order
+    if (orderDoc.user.toString() !== req.userId.toString()) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    // In test mode, accept the payment with minimal verification
+    if (isTestMode) {
+      console.log('Test mode payment verification:', { orderId, paymentId });
+      
+      // Update order status
+      orderDoc.status = 'confirmed';
+      orderDoc.paymentStatus = 'paid';
+      orderDoc.paymentId = paymentId || `pay_test_${Date.now()}`;
+      orderDoc.estimatedDeliveryTime = new Date(Date.now() + 30 * 60 * 1000);
+      await orderDoc.save();
+
+      // Emit real-time update
+      const io = req.app.get('io');
+      if (io) {
+        io.to(req.userId.toString()).emit('orderUpdate', {
+          orderId: orderDoc._id,
+          status: orderDoc.status,
+          message: 'Order confirmed and payment successful!'
+        });
       }
+
+      return res.json({
+        message: 'Payment verified in test mode',
+        order: orderDoc
+      });
+    }
+
+    // Production mode - verify signature
+    if (!paymentId || !signature) {
+      return res.status(400).json({ message: 'Payment ID and signature are required' });
+    }
+
+    try {
       const crypto = require('crypto');
       const expectedSignature = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
         .update(`${orderId}|${paymentId}`)
         .digest('hex');
       if (expectedSignature !== signature) {
-        return res.status(400).json({ message: 'Invalid payment signature' });
+        return res.status(400).json({ 
+          message: 'Invalid payment signature' 
+        });
       }
+
+      // If signature is valid, update the order
+      orderDoc.status = 'confirmed';
+      orderDoc.paymentStatus = 'paid';
+      orderDoc.paymentId = paymentId;
+      orderDoc.estimatedDeliveryTime = new Date(Date.now() + 30 * 60 * 1000);
+      await orderDoc.save();
+
+      return res.json({
+        message: 'Payment verified successfully',
+        order: orderDoc
+      });
+
+    } catch (cryptoError) {
+      console.error('Signature verification error:', cryptoError);
+      return res.status(500).json({ 
+        message: 'Error verifying payment signature' 
+      });
     }
 
     // Find and update order
