@@ -1,4 +1,5 @@
 # Pizza Ordering App
+
 <img width="1900" height="920" alt="image" src="https://github.com/user-attachments/assets/2d430802-d56a-44bd-9408-0dbe13774b3e" />
 
 A full-stack pizza ordering application built with React, Node.js, Express, and MongoDB. This app allows users to build custom pizzas, place orders, and provides admin functionality for order and inventory management.
@@ -6,11 +7,12 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
 ## Features
 
 ### User Features
+
 <img width="1866" height="936" alt="image" src="https://github.com/user-attachments/assets/02a02ebf-99f9-4bdc-beb4-f56280895e61" />
 
 - **User Registration & Authentication**: Complete registration with email verification and forgot password functionality
-  
 - **Custom Pizza Builder**: Interactive pizza builder with step-by-step selection of:
+
   - Pizza bases (5 options)
   - Sauces (5 options)
   - Cheese types
@@ -21,16 +23,17 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
 - **Order Management**: View order history and track order status in real-time
   <img width="1890" height="621" alt="image" src="https://github.com/user-attachments/assets/4ac9770d-90d4-41d3-9d2f-bd7011f7077a" />
 
-- **Payment Integration**: 
+- **Payment Integration**:
   - Secure Razorpay integration
   - Test mode support with mock transactions
   - Real-time payment status updates
   - Robust error handling
   - Configurable payment settings
-  <img width="1911" height="933" alt="image" src="https://github.com/user-attachments/assets/fa05ce74-c239-4684-beae-d206c76f1a2e" />
+    <img width="1911" height="933" alt="image" src="https://github.com/user-attachments/assets/fa05ce74-c239-4684-beae-d206c76f1a2e" />
 - **Real-time Updates**: Live order status updates using Socket.io
 
 ### Admin Features
+
 - **Admin Dashboard**: Overview of orders, revenue, and inventory status
   <img width="1890" height="947" alt="image" src="https://github.com/user-attachments/assets/1f80c042-351e-4624-b6f1-f5dbfb8cae54" />
 
@@ -49,6 +52,7 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
 ## Technology Stack
 
 ### Backend
+
 - **Node.js** with Express.js
 - **MongoDB** with Mongoose ODM
 - **JWT** for authentication
@@ -58,6 +62,7 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
 - **Razorpay** for payment processing
 
 ### Frontend
+
 - **React** with functional components and hooks
 - **Material-UI** for modern UI components
 - **React Router** for navigation
@@ -74,20 +79,24 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/GouravChouhan21/pizza-ordering-app.git
    cd pizza-ordering-app
    ```
 
 2. Install dependencies for both backend and frontend:
+
    ```bash
    npm install
    cd client && npm install
    ```
 
 3. Create environment files:
+
    - Copy `.env.example` to `.env`
    - Set up your environment variables
+
    ```bash
    cp .env.example .env
    ```
@@ -99,17 +108,20 @@ A full-stack pizza ordering application built with React, Node.js, Express, and 
 ## Installation & Setup
 
 ### 1. Clone the Repository
+
 ```bash
 git clone <repository-url>
 cd pizza-ordering-app
 ```
 
 ### 2. Install Backend Dependencies
+
 ```bash
 npm install
 ```
 
 ### 3. Install Frontend Dependencies
+
 ```bash
 cd client
 npm install
@@ -117,6 +129,7 @@ cd ..
 ```
 
 ### 4. Environment Configuration
+
 Create a `config.env` file in the root directory with the following variables (use your own secrets):
 
 ```env
@@ -134,6 +147,7 @@ ADMIN_EMAIL=your_admin_email@example.com
 ```
 
 ### 5. Seed the Database
+
 ```bash
 node scripts/seedData.js
 ```
@@ -141,6 +155,7 @@ node scripts/seedData.js
 ### 6. Start the Application
 
 #### Development Mode
+
 ```bash
 # Start backend server
 npm run dev
@@ -150,6 +165,7 @@ npm run client
 ```
 
 #### Production Mode
+
 ```bash
 # Build frontend
 npm run build
@@ -171,6 +187,7 @@ npm start
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 - `GET /api/auth/verify-email/:token` - Email verification
@@ -179,6 +196,7 @@ npm start
 - `GET /api/auth/me` - Get current user
 
 ### Pizza Components
+
 - `GET /api/pizza/varieties` - Get all pizza varieties
 - `GET /api/pizza/bases` - Get pizza bases
 - `GET /api/pizza/sauces` - Get sauces
@@ -188,6 +206,7 @@ npm start
 - `POST /api/pizza/calculate-price` - Calculate pizza price
 
 ### Orders
+
 - `GET /api/orders/config` - Payment config (exposes if payments enabled and keyId)
 - `POST /api/orders/create-order` - Create new order
 - `POST /api/orders/verify-payment` - Verify payment
@@ -196,6 +215,7 @@ npm start
 - `POST /api/orders/cancel/:id` - Cancel order
 
 ### Admin
+
 - `GET /api/admin/dashboard` - Admin dashboard data
 - `GET /api/admin/orders` - Get all orders
 - `PUT /api/admin/orders/:id/status` - Update order status
@@ -204,6 +224,7 @@ npm start
 - `POST /api/admin/create-admin` - Create admin user
 
 ### Inventory
+
 - `GET /api/inventory` - Get inventory items
 - `POST /api/inventory` - Add inventory item
 - `PUT /api/inventory/:id` - Update inventory item
@@ -232,24 +253,66 @@ pizza-ordering-app/
 
 ## Deployment
 
-This project can be deployed to any Node hosting platform (Render, Railway, etc.) with MongoDB Atlas.
+You can deploy this app using Vercel for both frontend and backend:
 
-1. Build the frontend
+1. First, push your latest changes to GitHub:
 ```bash
-cd client
-npm run build
+git add .
+git commit -m "Prepare for deployment"
+git push origin main
 ```
-2. Serve backend (Express) with a process manager or platform start command:
+
+2. Deploy using Vercel:
+   - Sign up at vercel.com
+   - Install Vercel CLI: `npm i -g vercel`
+   - Login to Vercel: `vercel login`
+   - Deploy: `vercel`
+   - Follow the prompts and configure your project
+
+3. Configure environment variables in Vercel:
+   - Go to your project settings in Vercel dashboard
+   - Add the following environment variables:
+     ```
+     NODE_ENV=production
+     MONGODB_URI=your_mongodb_uri
+     JWT_SECRET=your_secret
+     EMAIL_USER=your_email
+     EMAIL_PASS=your_email_password
+     RAZORPAY_KEY_ID=your_key
+     RAZORPAY_KEY_SECRET=your_secret
+     RAZORPAY_TEST_MODE=true/false
+     ADMIN_EMAIL=your_admin_email
+     ```
+
+4. Set up MongoDB Atlas:
+   - Create a free cluster at mongodb.com/cloud/atlas
+   - Get your connection string
+   - Add it to Vercel environment variables
+   - Allow connections from all IPs (0.0.0.0/0) in Atlas Network Access
+
+5. Configure Razorpay:
+   - Add your production Razorpay keys for live payments
+   - Or keep test mode enabled for development
+
+6. Your app will be deployed at: `https://your-app-name.vercel.app`
+
+### Useful Deployment Commands:
+
 ```bash
-npm start
+# Deploy to production
+vercel --prod
+
+# Check deployment status
+vercel ls
+
+# Pull latest environment variables
+vercel env pull
+
+# View deployment logs
+vercel logs
 ```
-3. Configure environment variables on the platform (do not commit secrets):
-   - PORT, MONGODB_URI, JWT_SECRET
-   - EMAIL_USER, EMAIL_PASS
-   - PAYMENTS_DISABLED (false to enable gateway)
-   - RAZORPAY_TEST_MODE, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET (if enabling payments)
-4. Point frontend to backend API. Locally we use `axios.defaults.baseURL = 'http://localhost:5000'`. In production, set the correct base URL.
 
 ### Git hygiene
+
 - Ensure `.env`, `config.env`, and other secrets are gitignored.
 - Provide `config.example.env` for collaborators with placeholders only.
